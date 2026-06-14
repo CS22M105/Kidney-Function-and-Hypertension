@@ -1,0 +1,5 @@
+Effect,Estimate,95% CI Lower,95% CI Upper,p-value
+ACME (Indirect Effect),-0.02843,-0.09414,0.01,0.19
+ADE (Direct Effect),3.03729,1.97473,4.11,< 0.001
+Total Effect,3.00886,1.94903,4.08,< 0.001
+Proportion Mediated,-0.00945,-0.03616,0.0,0.19
