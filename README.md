@@ -1,100 +1,91 @@
-# 🩺 Kidney Function and Hypertension
+# NHANES Kidney Function, Fluid Retention, and Blood Pressure Analysis
 
-**A Statistical & Causal Analysis using NHANES (2003–2004)**
+This project analyzes NHANES 2003-2004 data to study whether kidney dysfunction, measured with albumin-to-creatinine ratio (ACR), is associated with systolic blood pressure and hypertension risk, and whether extracellular fluid may mediate that relationship.
 
-📊 *Computational Statistics | R Programming | Causal Inference*
+## Research Questions
 
-## 📌 Project Overview
+- Is albuminuria stage associated with higher systolic blood pressure?
+- Is log-transformed ACR associated with SBP after adjusting for age, gender, BMI, and diabetes status?
+- Does extracellular fluid mediate the relationship between ACR and SBP?
+- How well do ACR and demographic/clinical variables predict hypertension?
 
-This project investigates the **relationship between kidney dysfunction and hypertension**, with a particular focus on whether **impaired kidney function contributes to elevated blood pressure via fluid retention**.
+## Data
 
-Using data from the **National Health and Nutrition Examination Survey (NHANES 2003–2004)**, the study applies:
+The analysis uses NHANES 2003-2004 tables:
 
-* Exploratory Data Analysis (EDA)
-* Hypothesis testing
-* Multivariable regression
-* Logistic regression
-* Mediation (causal) analysis
-* Predictive modeling and validation
+- `DEMO_C`: demographics
+- `BIX_C`: bioelectrical impedance / extracellular fluid
+- `BMX_C`: body measures
+- `BPX_C`: blood pressure readings
+- `DIQ_C`: diabetes questionnaire
+- `L16_C.xpt`: urine albumin and creatinine lab file
 
-The analysis is implemented entirely in **R**, following a **modular, reproducible, and research-oriented structure**.
+The local lab file is stored at `data/raw/L16_C.xpt`. Other NHANES tables are downloaded by `nhanesA` when the analysis is run.
 
-## 🎯 Research Questions
+## Methods
 
-* Does impaired kidney function (measured using **Creatinine** and **Albumin-to-Creatinine Ratio, ACR**) influence blood pressure?
-* Does **fluid retention (extracellular fluid)** mediate the relationship between kidney dysfunction and hypertension?
-* Can kidney health markers be used to **predict hypertension risk**?
-* How do these relationships vary across demographic and health subgroups?
+The workflow cleans and joins NHANES tables, calculates average systolic and diastolic blood pressure, computes ACR, assigns albuminuria stages, removes pregnant participants, and models hypertension status.
 
-## 🧠 Key Concepts & Methods
+Main methods include:
 
-* **Causal framework** using Directed Acyclic Graphs (DAGs)
-* **Log-transformation** of skewed biomarkers (ACR)
-* **Multivariable linear regression** for continuous BP outcomes
-* **Logistic regression** for hypertension classification
-* **Mediation analysis** to study indirect effects via fluid retention
-* **Model evaluation** using ROC curves and cross-validation
+- Exploratory data analysis and correlation heatmaps
+- Albuminuria-stage comparisons with ANOVA and Tukey tests
+- Linear regression for SBP
+- Logistic regression and 5-fold cross-validation for hypertension prediction
+- Causal mediation analysis using extracellular fluid as mediator
 
-## 🗂️ Repository Structure
+## Headline Results
+
+- Mean SBP increased by albuminuria stage: A1 about 117, A2 about 124, and A3 about 136 mmHg.
+- SBP differed significantly across ACR stages: ANOVA `p = 8.23e-10`.
+- In adjusted linear regression, `log_ACR` was positively associated with SBP: coefficient `3.356`, `p < 2e-16`.
+- Extracellular fluid was positively correlated with SBP: correlation `0.274`, `p < 2.2e-16`.
+- The logistic hypertension model had cross-validated ROC AUC around `0.753`.
+- Mediation analysis found a significant direct effect of log-ACR on SBP, but the indirect effect through extracellular fluid was not statistically significant.
+
+## Repository Structure
 
 ```text
-├── data_loading/
-│   └── load_data.R              # NHANES data import and preprocessing
-│
-├── eda/
-│   └── eda.R                    # Descriptive statistics and distributions
-│
-├── tests/
-│   └── tests.R                  # Z-tests, chi-square tests
-│
-├── models results/
-│   └── Table showing the final results
-│
-├── reports/
-│   ├── Final_report.pdf         # Full statistical report
-│   └── final_p.html             # HTML + R Markdown combined report
-│
+.
 ├── README.md
+├── requirements.R
+├── R/
+│   ├── 01_load_data.R
+│   ├── 02_clean_transform.R
+│   ├── 03_eda.R
+│   ├── 04_models.R
+│   ├── 05_hypothesis_tests.R
+│   └── run_analysis.R
+├── data/
+│   ├── raw/
+│   │   └── L16_C.xpt
+│   └── processed/
+├── figures/
+├── reports/
+│   ├── final_analysis.html
+│   └── final_report.pdf
+└── results/
+    └── mediation_summary_original.csv
 ```
 
-## 📈 Key Findings
+## Reproduce The Analysis
 
-* **Log-transformed ACR** is a strong and significant predictor of systolic blood pressure.
-* Each unit increase in log(ACR) increases:
-
-  * **SBP by ~3.36 mmHg**
-  * **Odds of hypertension by ~70%**
-* **Creatinine alone** shows weak direct association with BP, suggesting indirect pathways.
-* **Extracellular fluid** correlates with SBP, supporting a **fluid-retention mediation hypothesis**.
-* Predictive model achieved:
-
-  * **ROC AUC ≈ 0.76**
-  * High sensitivity for hypertension detection
-
-## 🛠️ Technologies Used
-
-* **Language:** R
-* **Libraries:**
-
-  * `tidyverse`
-  * `ggplot2`
-  * `dplyr`
-  * `mediation`
-  * `caret`
-  * `pROC`
-* **Data Source:** NHANES (CDC)
-
-To run:
+Install dependencies:
 
 ```r
-source("data_loading/load_data.R")
-source("eda/eda.R")
-source("tests/tests.R")
+source("requirements.R")
 ```
 
-## ⭐ Why This Project Matters
-This project demonstrates:
-* Strong **statistical thinking**
-* Real-world **healthcare data analysis**
-* **Causal reasoning beyond correlation**
-* Clean, production-quality **R code organization**
+Run the full analysis:
+
+```r
+source("R/run_analysis.R")
+```
+
+This will create processed data in `data/processed/`, result tables in `results/`, and figures in `figures/`.
+
+## Existing Reports
+
+- Rendered HTML analysis: `reports/final_analysis.html`
+- Final PDF report: `reports/final_report.pdf`
+- Original mediation summary table: `results/mediation_summary_original.csv`
