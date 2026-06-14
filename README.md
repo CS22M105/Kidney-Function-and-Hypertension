@@ -83,9 +83,3 @@ source("R/run_analysis.R")
 ```
 
 This will create processed data in `data/processed/`, result tables in `results/`, and figures in `figures/`.
-
-## Existing Reports
-
-- Rendered HTML analysis: `reports/final_analysis.html`
-- Final PDF report: `reports/final_report.pdf`
-- Original mediation summary table: `results/mediation_summary_original.csv`
